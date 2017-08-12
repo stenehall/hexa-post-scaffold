@@ -39,22 +39,22 @@
      <script type="text/javascript" charset="utf-8">
      const template = (title, address, date, weather) =>
   `---
-     title: ${title}
-     date: ${date}
-     tags:
-     meta:
-       location: ${address.address}
-       latlong: ${address.lat}, ${address.long}
-       weather: ${weather.main}, ${weather.temp}C
-       mood:
-       weight:
-       height:
-       cover_image:
-       photos:
-     ---
+title: ${title}
+date: ${date}
+tags:
+meta:
+  location: ${address.address}
+  latlong: ${address.lat}, ${address.long}
+  weather: ${weather.main}, ${weather.temp}C
+  mood:
+  weight:
+  height:
+  cover_image:
+  photos:
+---
 
-     Text goes here
-     `
+Text goes here
+`
 
 let address = {}
 let weather = {}
