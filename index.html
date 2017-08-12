@@ -12,18 +12,27 @@
         }
 
         input {
-          border: 1px solid #eee;
+          border: 2px solid #000;
+          border-right: none;
           background: #efefef;
           padding: 10px;
           outline: none;
           font-size: 24px;
         }
+
+        button {
+          background: #efefef;
+          font-size: 24px;
+          padding: 10px;
+          border: 2px solid #000;
+          margin-left: -4px;
+          border-left: none
+        }
        </style>
      </head>
 
      <body>
-       <input id="title">
-       <button id="create">Create file</button>
+       <input id="title"><button id="create">></button>
        <a download="info.txt" id="downloadlink"></a>
      </body>
 
