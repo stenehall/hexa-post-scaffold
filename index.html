@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+<html>
+     <head>
+       <style>
+        body {
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #fff;
+        }
+
+        input {
+          border: 1px solid #eee;
+          background: #efefef;
+          padding: 10px;
+          outline: none;
+          font-size: 24px;
+        }
+       </style>
+     </head>
+
+     <body>
+       <input id="title">
+       <button id="create">Create file</button>
+       <a download="info.txt" id="downloadlink"></a>
+     </body>
+
+     <script type="text/javascript" charset="utf-8">
+     const template = (title, address, date, weather) =>
+  `---
+     title: ${title}
+     date: ${date}
+     tags:
+     meta:
+       location: ${address.address}
+       latlong: ${address.lat}, ${address.long}
+       weather: ${weather.main}, ${weather.temp}C
+       mood:
+       weight:
+       height:
+       cover_image:
+       photos:
+     ---
+
+     Text goes here
+     `
+
+let address = {}
+let weather = {}
+const $ = document.querySelector.bind(document)
+const makeTextFile = text => window.URL.createObjectURL(new Blob([text], { type: 'text/plain' }))
+const genWeather = json => ({ main: json.weather[0].main, temp: json.main.temp })
+
+const getCurrentAddress = (location, callback) =>
+  new google.maps.Geocoder().geocode({ location: location }, callback)
+
+const processGeolocationResult = position => ({
+  lat: position.coords.latitude.toFixed(8),
+  long: position.coords.longitude.toFixed(8)
+})
+
+const genAddress = latlong => (results, status) => {
+  address = {
+    address: status == google.maps.GeocoderStatus.OK ? results[0].formatted_address : '',
+    lat: latlong.lat,
+    long: latlong.long
+  }
+}
+
+const download = weather => {
+  const date = new Date().toISOString().replace('T', ' ')
+
+  const title = $('#title').value
+  const filenameTitle = title.replace(/ /g, '-').toLowerCase()
+  const templateString = template(title, address, date.substr(0, 19), weather)
+
+  const link = $('#downloadlink')
+  link.download = `${date.substr(0, 10)}-${filenameTitle}.txt`
+  link.href = makeTextFile(templateString)
+  link.click()
+
+  document.open('text/plain')
+  document.write(templateString)
+  document.close()
+}
+
+function initMap() {
+  navigator.geolocation.getCurrentPosition(position => {
+    const latlong = processGeolocationResult(position)
+    getCurrentAddress(new google.maps.LatLng(latlong.lat, latlong.long), genAddress(latlong))
+  })
+}
+
+$('#create').addEventListener(
+  'click',
+  function() {
+    fetch(
+      `https://api.openweathermap.org/data/2.5/weather?units=metric&APPID=ed408678598a12e86742436552e555f5&lat=${address.lat}&lon=${address.long}`
+    )
+      .then(resp => resp.json())
+      .then(genWeather)
+      .then(download)
+  },
+  false
+)
+</script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyBLK7KG_tbaajex2W4Fey3dfzanSh9TE6w"></script>
+
+</html>
