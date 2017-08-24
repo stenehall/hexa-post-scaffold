@@ -12,18 +12,22 @@
           flex-direction: column;
         }
 
-        input, button {
+        input, button, a {
           border: 2px solid #000;
           background: #efefef;
           padding: 10px;
           outline: none;
           font-size: 24px;
           box-sizing: border-box;
-          width: 300px
+          width: 300px;
+          text-align: center;
+          text-decoration: none;
+          color: #000;
+          font-family: sans-serif;
         }
 
-        input {
-          margin-bottom: 20px;
+        button {
+          margin: 20px auto;
         }
 
         .hidden {
@@ -35,7 +39,7 @@
      <body>
        <input id="title">
        <button class="hidden" id="create">Create</button>
-       <a target="_blank" id="downloadlink"></a>
+       <a target="_blank" class="hidden" id="downloadlink">Download</a>
      </body>
 
      <script type="text/javascript" charset="utf-8">
@@ -53,6 +57,7 @@ meta:
   mood:
   weight:
   height:
+  achievement:
 ---
 
 Text goes here
@@ -61,7 +66,8 @@ Text goes here
 let address = {}
 let weather = {}
 const $ = document.querySelector.bind(document)
-const makeTextFile = text => window.URL.createObjectURL(new Blob([text], { type: 'text/plain' }))
+const makeTextFile = text => window.URL.createObjectURL(new Blob(['\ufeff', text], 
+  {encoding:"UTF-8",type:"text/plain;charset=UTF-8"}))
 const genWeather = json => ({ main: json.weather[0].main, temp: json.main.temp })
 
 const getCurrentAddress = (location, callback) =>
@@ -90,6 +96,7 @@ const download = weather => {
   const templateString = template(title, address, date.substr(0, 19), weather)
 
   const link = $('#downloadlink')
+  link.classList.toggle('hidden')
   link.download = `${date.substr(0, 10)}-${filenameTitle}.md`
   link.href = makeTextFile(templateString)
   //link.click()
