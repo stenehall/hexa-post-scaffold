@@ -9,31 +9,33 @@
           align-items: center;
           justify-content: center;
           background: #fff;
+          flex-direction: column;
         }
 
-        input {
+        input, button {
           border: 2px solid #000;
-          border-right: none;
           background: #efefef;
           padding: 10px;
           outline: none;
           font-size: 24px;
+          box-sizing: border-box;
+          width: 300px
         }
 
-        button {
-          background: #efefef;
-          font-size: 24px;
-          padding: 10px;
-          border: 2px solid #000;
-          margin-left: -4px;
-          border-left: none
+        input {
+          margin-bottom: 20px;
+        }
+
+        .hidden {
+          display: none;
         }
        </style>
      </head>
 
      <body>
-       <input id="title"><button id="create">></button>
-       <a download="info.txt" id="downloadlink"></a>
+       <input id="title">
+       <button class="hidden" id="create">Create</button>
+       <a target="_blank" id="downloadlink"></a>
      </body>
 
      <script type="text/javascript" charset="utf-8">
@@ -42,6 +44,8 @@
 title: ${title}
 date: ${date}
 tags:
+cover_image:
+photos:
 meta:
   location: ${address.address}
   latlong: ${address.lat}, ${address.long}
@@ -49,8 +53,6 @@ meta:
   mood:
   weight:
   height:
-  cover_image:
-  photos:
 ---
 
 Text goes here
@@ -76,6 +78,8 @@ const genAddress = latlong => (results, status) => {
     lat: latlong.lat,
     long: latlong.long
   }
+
+  $('#create').classList.remove('hidden')
 }
 
 const download = weather => {
@@ -86,18 +90,22 @@ const download = weather => {
   const templateString = template(title, address, date.substr(0, 19), weather)
 
   const link = $('#downloadlink')
-  link.download = `${date.substr(0, 10)}-${filenameTitle}.txt`
+  link.download = `${date.substr(0, 10)}-${filenameTitle}.md`
   link.href = makeTextFile(templateString)
-  link.click()
+  //link.click()
+  window.open(link.href)
+  //history.pushState({}, title, link.download)
 
-  document.open('text/plain')
-  document.write(templateString)
-  document.close()
+  // document.open('text/plain')
+  // document.write(templateString)
+  // document.close()
 }
 
 function initMap() {
   navigator.geolocation.getCurrentPosition(position => {
     const latlong = processGeolocationResult(position)
+    latlong.lat = latlong.lat.slice(0, -1)
+    latlong.long = latlong.long.slice(0, -1)
     getCurrentAddress(new google.maps.LatLng(latlong.lat, latlong.long), genAddress(latlong))
   })
 }
@@ -115,6 +123,5 @@ $('#create').addEventListener(
   false
 )
 </script>
-    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyBLK7KG_tbaajex2W4Fey3dfzanSh9TE6w"></script>
-
+  <script src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyBLK7KG_tbaajex2W4Fey3dfzanSh9TE6w"></script>
 </html>
